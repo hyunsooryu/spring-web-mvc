@@ -100,6 +100,16 @@ import java.io.IOException;
  *
  * 5. Dispatcher Servlet
  *
+ * initStrategies 전략
+ *
+ * 전략적으로 기본 전략이 있습니다.
+ *
+ * DispatcherServlet.properties에 가면 기본 전략들이 있고,
+ *
+ * 보통 WebApplicationContext에서 Bean들을 찾아서 있으면 그 빈을 쓰고,
+ *
+ * 없다면,해당 defaultStrategies를 활용하게 됩니다.
+ *
  *
  * 6. 스프링 MVC 구성 요소
  *
