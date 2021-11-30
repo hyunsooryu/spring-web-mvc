@@ -23,5 +23,15 @@ Spring-mvc 자체가 어떠한, 고정 된 틀이 라는 개념이 아니라, Io
 6. handerMapping -> handlerAdapter -> doPrehandle(intercetors) -> invoke handler (Reflection) -> HandlerMethodArgumentResolver -> 필요시(MessageConverter)
    이후 returnValue를 보고, viewResolver 혹은, ResponseEntity 로 넘길 것인지 판단
    
+# 스프링 MVC 설정
+
+### 1. 기본 전략을 사용하기 싫다면, Bean으로 등록하여 사용하라
+Spring MVC를 설정 할 때, 별 다른 설정을 하지 않아도 DispatcherServlet.properties에 있는 기본 전략을 사용하게 된다. 문제는 기본 전략은 모두 해당 기본 값으로 적용되기 때문에 서비스에 이를 사용하기에는 문제가 있다., 극단적인 예로 InternalResourceViewResolver 가 DispatchServlet의 initStratgies Method를 통해 등록 될 때, prefix와 suffix가 없는 것을 들 수 있다. 그렇다면 어떻게 해야할 것인가. ViewResolver를 예로 들자면, DispatcherServlet은 ApplicationContext에, 해당 ViewResolver.class 타입 혹은 자식의 Bean이 있을 경우 해당 Bean을 등록하여 사용하고, 해당 Bean이 없는 경우에 한하여 기본 전략을 구사하게 된다. 즉 만약, DispatcherServlet의 기본전략을 사용하고 싶지 않다면, 사용하고 싶은 기능을 본인이 직접 Bean으로 등록하는 방법이 있을 것이다. @Configuration + @Bean 조합이 가장 간단한 그 예가 될것이다. HandlerMapping, HandlerAdapter 등을 직접 @Bean으로 등록해보자.
+
+### 2. 기본 전략을 사용하기 싫다면, @EnableWebMvc를 사용하라 - 애노테이션 기반 스프링 MVC를 사용할 때 편리한 웹 MVC 기본 설정
+@EnableWebMvc는 @Configuration이 달려있는 Config.java 파일과 함께 사용될 수 있다. 해당 애노테이션을 살펴보면, @Import(DelegatingWebMvcConfiguration.class) 라는 부분을 확인 할 수 있다. 
+DelegatingWebMvcConfiguration.class 는 WebMvcConfigurationSupport.class를 상속받는 구조인데 해당 클래스 파일을 살펴보면, 실질적으로 MVC와 관련한 많은 @Bean들이 등록 되어있다는 사실을 알 수 있다. WebMvcConfigurationSupport 자바 파일을 살펴보면, if(jackson2Present){adpater.setRequestBodyAdvice(~)}, if(jackson2Present){messageConverter.add(new MappingJackson2HttpMessageConverter()~)} 와 같은 내용을 볼 수 있다. 클래스 로더 패턴을 사용하여, classUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper") && classUtils.isPresent("com.fasterxml.jackson.core.JsonGenerator") 인 경우, 해당 내용을 빈 설정에 활용 하는 것이다. 즉, classpath에 Jackson 관련 라이브러리가 있는 경우 자동으로 빈설정에 이를 반영하게 된다. 이러한 이유로, 우리가 개발을 할 때 따로 Jackson 관련한 ObjectMapper나, MessageConverㅅer를 직접 등록해 주지 않아
+DelegatingWebMvcConfiguration.class 는 WebMvcConfigurationSupport.class를 상속받는 구조인데 해당 클래스 파일을 살펴보면, 실질적으로 MVC와 관련한 많은 @Bean들이 등록 되어있다는 사실을 알 수 있다. WebMvcConfigurationSupport 자바 파일을 살펴보면, if(jackson2Present){adpater.setRequestBodyAdvice(~)}, if(jackson2Present){messageConverter.add(new MappingJackson2HttpMessageConverter()~)} 와 같은 내용을 볼 수 있다. 클래스 로더 패턴을 사용하여, classUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper") && classUtils.isPresent("com.fasterxml.jackson.core.JsonGenerator") 인 경우, 해당 내용을 빈 설정에 활용 하는 것이다. 즉, classpath에 Jackson 관련 라이브러리가 있는 경우 자동으로 빈설정에 이를 반영하게 된다. 이러한 이유로, 우리가 개발을 할 때 따로 Jackson 관련한 ObjectMapper나, MessageConverter를 직접 등록해 주지 않아도, pom.xml에 dependency로 추가만 하면 자동으로 사용할 수 있게 되는것이다. 참 재미있는 것은 @EnableWebMvc를 사용하면, HandlerMapping에 해당 되는 핸들러매핑 중 RequestMappingHanderMapping이 가장 맨 앞에 위치하게 된다는 점이다. DispatcherServlet의 기본 전략에서는 BeanNameHandlerMapping이 1위였다.
+
 
 
