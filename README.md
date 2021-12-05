@@ -40,7 +40,7 @@ WebMvcConfigurer 인터페이스를 구현하면, 여러 확장 포인트들을 
 
 1. 스프링 부트 기본 web mvc 설정 https://github.com/hyunsooryu/spring-web-mvc/tree/master/mvc-with-springboot
 2. 스프링 부트 jsp 및 war 배포 설정 https://github.com/hyunsooryu/spring-web-mvc/tree/master/war-with-springboot
-3. 스프링 부트 CORS, HATEOS, EXCEPTION HANDLER 등 설정 https://github.com/hyunsooryu/spring-boot-mvc
+3. 스프링 부트 CORS, HATEOS, EXCEPTION HANDLER, COOKIE VALUE 등 설정 https://github.com/hyunsooryu/spring-boot-mvc
 
 
 
