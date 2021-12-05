@@ -33,5 +33,11 @@ Spring MVC를 설정 할 때, 별 다른 설정을 하지 않아도 DispatcherSe
 DelegatingWebMvcConfiguration.class 는 WebMvcConfigurationSupport.class를 상속받는 구조인데 해당 클래스 파일을 살펴보면, 실질적으로 MVC와 관련한 많은 @Bean들이 등록 되어있다는 사실을 알 수 있다. WebMvcConfigurationSupport 자바 파일을 살펴보면, if(jackson2Present){adpater.setRequestBodyAdvice(~)}, if(jackson2Present){messageConverter.add(new MappingJackson2HttpMessageConverter())} 와 같은 내용을 볼 수 있다. 클래스 로더 패턴을 사용하여, classUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper") && classUtils.isPresent("com.fasterxml.jackson.core.JsonGenerator") 인 경우, 해당 내용을 빈 설정에 활용 하는 것이다. 즉, classpath에 Jackson 관련 라이브러리가 있는 경우 자동으로 빈설정에 이를 반영하게 된다. 이러한 이유로, 우리가 개발을 할 때 따로 Jackson 관련한 ObjectMapper나, MessageConverㅅer를 직접 등록해 주지 않아
 DelegatingWebMvcConfiguration.class 는 WebMvcConfigurationSupport.class를 상속받는 구조인데 해당 클래스 파일을 살펴보면, 실질적으로 MVC와 관련한 많은 @Bean들이 등록 되어있다는 사실을 알 수 있다. WebMvcConfigurationSupport 자바 파일을 살펴보면, if(jackson2Present){adpater.setRequestBodyAdvice()}, if(jackson2Present){messageConverter.add(new MappingJackson2HttpMessageConverter())} 와 같은 내용을 볼 수 있다. 클래스 로더 패턴을 사용하여, classUtils.isPresent("com.fasterxml.jackson.databind.ObjectMapper") && classUtils.isPresent("com.fasterxml.jackson.core.JsonGenerator") 인 경우, 해당 내용을 빈 설정에 활용 하는 것이다. 즉, classpath에 Jackson 관련 라이브러리가 있는 경우 자동으로 빈설정에 이를 반영하게 된다. 이러한 이유로, 우리가 개발을 할 때 따로 Jackson 관련한 ObjectMapper나, MessageConverter를 직접 등록해 주지 않아도, pom.xml에 dependency로 추가만 하면 자동으로 사용할 수 있게 되는것이다. 참 재미있는 것은 @EnableWebMvc를 사용하면, HandlerMapping에 해당 되는 핸들러매핑 중 RequestMappingHanderMapping이 가장 맨 앞에 위치하게 된다는 점이다. DispatcherServlet의 기본 전략에서는 BeanNameHandlerMapping이 1위였다.
 
+### 3.WebMvcConfigurer를 구현하라
+WebMvcConfigurer 인터페이스를 구현하면, 여러 확장 포인트들을 사용할 수 있다. WebMvcConfigurer는 SpringBoot에서도 사용할 수 있다. 스프링 3.1부터 제공하며, 스프링 부트에서도 웹MVC 자동설정 이외의 추가적인 설정을 하고 싶을 때 해당 인터페이스를 사용하고는 한다. 가장 코딩적으로 확장할 수 있는 인터페이스이다. Boot가 아닌 환경에서는, @EnableWebMvc에서 델리게이션 구조로 WebMvcConfigurer에게 위임한다. 즉 직접 Bean으로 등록하지 않아도, EnableWebMvc가 등록해주는 Bean들을 커스터마이징 할 수 있는 장점이 있다. 즉 WebMvcConfigurer는 MVC 관련 한 설정 Bean들을 커스터 마이징 할 떄 활용할 수 있는 인터페이스 라는 것이다. 가령 Formatter, Converter 같은 경우, SpringBoot에서는 Bean으로만 등록이 되어있어도 FormatterRegistry에 등록해주는 그런 장점이 있기도 해서, Boot의 MVC 설정은 조금 더 자동적으로 수행되는 포인트들이 많아 따로 공부를 해야한다. 또한 ContentNegotiationViewResolver 와 같은 경우, Spring Boot에서는 기본으로 설정이 되어있다.
+
+### 4.SpringBoot의 스프링 MVC 설정
+
+
 
 
