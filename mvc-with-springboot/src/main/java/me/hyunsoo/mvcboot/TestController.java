@@ -2,10 +2,14 @@ package me.hyunsoo.mvcboot;
 
 import lombok.Getter;
 import me.hyunsoo.mvcboot.beans.Person;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,6 +55,24 @@ public class TestController {
         person.setAge(19);
         person.setName("hyunsoo");
         return person;
+    }
+
+    @PostMapping(value="/save")
+    ResponseEntity save(){
+        System.out.println("save");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/redirect_self")
+    ResponseEntity redirect(){
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setLocation(URI.create("/here"));
+        return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT).headers(httpHeaders).build();
+    }
+
+    @GetMapping("/here")
+    public String here(@RequestParam("name") String name){
+        return name;
     }
 
 }
