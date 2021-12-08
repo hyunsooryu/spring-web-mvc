@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form action="#" th:action="@{/submit/events}" method="post" th:object="${event}">
+        <input th:field="*{id}"/>
+        <input th:field="*{name}">
+        <input type="submit" th:value="전송">
+    </form>
+</body>
+</html>
